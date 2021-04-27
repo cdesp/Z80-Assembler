@@ -1,0 +1,6 @@
+*.dcu
+*.res
+__recovery/
+__history/
+*.dmp
+Runtime/
