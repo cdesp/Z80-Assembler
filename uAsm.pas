@@ -155,6 +155,7 @@ Type
     procedure checkboolean(var s: string);
     procedure SetProjectPath(const Value: string);
     function fixCommandLine(ln: string): string;
+    procedure IncludeBinFile(fn: String;    p:PCmpInst);
    protected
      procedure DoOnCompileMessage(const MSG: string); virtual;
      procedure DoOnCompileProgress(const Pass, cPos, PosMax: Integer); virtual;
@@ -198,7 +199,7 @@ Function CreateCompiler(Init:Boolean=true):TCompiledList;
 implementation
 uses udisasm,sysutils,uStrings,windows,uNBParser,uNBTypes, FatExpression,frmDisassembly;
 
-Const MaxKW=18;
+Const MaxKW=19;
       MaxSpecialKW=4;
       opOrg=0;
       opEQU=8;
@@ -206,7 +207,7 @@ Const MaxKW=18;
       MaxRelCMDs=2;
 Var
     SpecialKW:Array[0..MaxSpecialKW] of String=('JR','JP','CALL','DJNZ','RST');
-    PseudoKW:Array[0..MaxKW] of String=('ORG','DEFB','DEFW','DEFM','DB','DS','DEFS','DW','EQU','PSECT','GLOBAL','NAME','EJECT','DM','TITLE','INCLUDE','MODULE','ENDMODULE','ALIGN');
+    PseudoKW:Array[0..MaxKW] of String=('ORG','DEFB','DEFW','DEFM','DB','DS','DEFS','DW','EQU','PSECT','GLOBAL','NAME','EJECT','DM','TITLE','INCLUDE','MODULE','ENDMODULE','ALIGN','INCLUBIN');
     Registers:Array[1..MaxReg] of String=('A','B','C','D','E','F','H','L','I','R',
                                       'AF','BC','DE','HL','IR','IX','IY','SP',
                                       'Z','NZ','NC','PO','PE','P','M');
@@ -247,6 +248,36 @@ Begin
     sl.free;
   end;
 end;
+
+Procedure TCompiledList.IncludeBinFile(fn:String;    p:PCmpInst);
+Var sl:Tfilestream;
+    i:Integer;
+    mypath:string;
+    b:byte;
+
+Begin
+  if fProjectpath='' then
+  Begin
+   if WorkingDir='' then
+     mypath:=AppPath+DefaultAsmDir
+   else mypath:= WorkingDir;
+  End
+  else mypath:=FProjectPath;
+
+  sl:=Tfilestream.create(mypath+fn,fmOpenRead);
+  TRy
+    for i := 0 to sl.Size - 1 do
+    //add bytes to compiled data
+    Begin
+      sl.Read(b,1);
+      AddByte(p,b,15);       //15=include binary file
+    End;
+
+  finally
+    sl.free;
+  end;
+end;
+
 
 Procedure TCompiledList.NbParsEval1GetValue(Sender: TObject;
   Identifier: string; var Value: Extended; var Undefined: Boolean);
@@ -514,6 +545,8 @@ Begin
     p.Status:=csCMDPASS2;
     p.Label1Exp:=Eval;//to be evaluated;
     p.Label2Exp:='';
+    if OPIDX in [4,5,6,7,8,9,10,11,12,13] then p.ByteCnt:=0;
+    
 End;
 
 Function TCompiledList.CheckPseudoOps:Boolean;
@@ -565,7 +598,11 @@ Var OpIdx:Integer;
           opidx:=13
        Else
        if Sametext(PartCMD,'ALIGN') then
-          opidx:=14;
+          opidx:=14
+       Else
+       if Sametext(PartCMD,'INCLUBIN') then
+          opidx:=15;
+
     End;
 
     Procedure ADDBYTES;
@@ -720,7 +757,7 @@ Begin
 
   s:=curtext;
   s:=StringReplace(s,' + ','+',[rfReplaceAll]);
-  s:=StringReplace(s,' - ','+',[rfReplaceAll]);
+  s:=StringReplace(s,' - ','-',[rfReplaceAll]);
   s:=StringReplace(s,' * ','*',[rfReplaceAll]);
   s:=StringReplace(s,' / ','/',[rfReplaceAll]);
   s:=StringReplace(s,', ',',',[rfReplaceAll]);
@@ -751,6 +788,7 @@ Begin
         Begin
           AddLog('Pseudo OPC [DS]    '+ct);
           CheckLabel;
+          OnlyOneArg;
           if GetInteger(PartArg1,k) then
           Begin
             for i := 1 to k do
@@ -857,7 +895,11 @@ Begin
            AddError('ALIGN should have an integer param');
           //change pc to be on a boundary
         end;
-
+      15://INCLUDE BIN
+        Begin
+          AddLog('Pseudo OPC [INCLUDE BINARY FILE]  '+ct);
+          IncludeBinFile(PartArg1,p);
+        end;
    end;
 
    Result:=True;
@@ -1407,9 +1449,13 @@ Var i:integer;
         End;
 
 Var PassStr:String;
+    doAnotherPass:longint;
 Begin
+   doAnotherPass:=0;
   if IsLinking then
+  Begin
    PassStr:='PASS 3 [LINKING]'
+  End
   Else
    PassStr:='PASS 2';
 
@@ -1420,7 +1466,9 @@ Begin
   ADDLOG('---------------------------------------------------------',False);
   ADDLOG('',False);
 
-
+ repeat
+ if IsLinking then
+   inc(doAnotherPass);
   for i := 0 to Count-1  do
   Begin
     p:=PCmpInst(Get(i));
@@ -1485,17 +1533,19 @@ Begin
                           p.Status:=csCMDOK;
                         End //If
                          Else  //if k=-99999 then PASS3
+                         if doAnotherPass=0 then
                          Begin
                             if isLinking then
-                               AddError(PassStr+':Expression ['+lbl+'] not found!!!!')
+                               AddError(PassStr+':Expression ['+lbl+'] not found CMD:['+P.OrigCmd+']!')
                             Else
                             Begin
                               if IsProject then
-                                 AddLog(PassStr+':Expression ['+lbl+'] not found. Check again in PASS 3???')
+                                 AddLog(PassStr+':Expression ['+lbl+'] not found CMD:['+P.OrigCmd+'] Check again in PASS 3???')
                               Else
-                                AddError(PassStr+':Expression ['+lbl+'] not found!!!!')
+                                AddError(PassStr+':Expression ['+lbl+'] not found CMD:['+P.OrigCmd+']!')
                             end;
-                         end;
+                         end
+                          else inc(doAnotherPass);
                       End;
              csCMDPASS2:Begin
                            ADDLog(PassStr+': Replace Variable --> '+p.OrigCmd);
@@ -1534,26 +1584,29 @@ Begin
                             end
                            End// End this time ok
                            Else  //if k=-99999 then PASS3
-                            if k=ASMNOTFOUND then
+                           if doanotherpass=0 then
+                           Begin
+                            if (k=ASMNOTFOUND) then
                             Begin
                               if isLinking then
-                               AddError(PassStr+':Expression ['+p.Label1Exp+'] not found!!!!.')
+                               AddError(PassStr+':Expression ['+p.Label1Exp+'] not found CMD:['+P.OrigCmd+']!.')
                               Else
                               Begin
                                if IsProject then
-                                 AddLog(PassStr+':Expression ['+p.Label1Exp+'] not found. Check again in PASS 3 ???')
+                                 AddLog(PassStr+':Expression ['+p.Label1Exp+'] not found. CMD:['+P.OrigCmd+'] Check again in PASS 3 ???')
                                Else
-                                 AddError(PassStr+':Expression ['+p.Label1Exp+'] not found!!!!.')
+                                 AddError(PassStr+':Expression ['+p.Label1Exp+'] not foundCMD:['+P.OrigCmd+']!.')
                               end;
                             end
                             else
                             begin
                              if IsProject then
-                              AddLog(PassStr+':Expression ['+p.Label1Exp+'] not found. Check again in PASS 3 ???')
+                              AddLog(PassStr+':Expression ['+p.Label1Exp+'] not found. CMD:['+P.OrigCmd+'] Check again in PASS 3 ???')
                              else
-                              AddError(PassStr+':Expression ['+p.Label1Exp+'] is invalid. OPIDX='+inttostr(p.CMDIDX));
+                              AddError(PassStr+':Expression ['+p.Label1Exp+'] is invalid. CMD:['+P.OrigCmd+'] OPIDX='+inttostr(p.CMDIDX));
                             end;
-
+                           end
+                           else inc(doAnotherPass);
 
                           End//End Pseudo op
                           else
@@ -1571,6 +1624,12 @@ Begin
          end;//Case
 
   End;// For
+  if doAnotherPass>0 then
+   if doAnotherPass=1 then doAnotherPass:=0 //not needed
+    else if doAnotherPass<1000000 then doAnotherPass :=1000000;
+
+
+ until (doAnotherPass=0) or (doAnotherPass>1000000);
 
   GotoLastDollar;
 End;//Do Pass2  and DoPass3

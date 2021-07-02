@@ -41,7 +41,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.06';
+  Version='1.09';
 
 type
 
@@ -1326,7 +1326,7 @@ end;
 end;
 
 //Set up Com Port
-var data:ARRAY[0..28] OF Byte =  ($3E,$80,$D3,$23,$3E,$FF,$D3,$20,$3E,$00,$D3,$21,$3E,$03,$D3,$23,$3E,$00,$D3,$22,$3E,$00,$D3,$21,$C3,$89,$02,$00,$00);
+var data:ARRAY[0..28] OF Byte =  ($3E,$80,$D3,$23,$3E,$FF,$D3,$20,$3E,$00,$D3,$21,$3E,$03,$D3,$23,$3E,$00,$D3,$22,$3E,$00,$D3,$21,$C3,$04,$00,$00,$00);
 procedure Tfrmdis.setz80baudrate;
 var
    i:integer;

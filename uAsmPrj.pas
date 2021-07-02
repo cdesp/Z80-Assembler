@@ -39,7 +39,7 @@ Type
 
   TAsmFile=Class
   private
-    procedure DoCompile(const AFile: string);
+    procedure DoCompile(const AFile: string;clrglobal:boolean=true);
     procedure GetProps; //holds the result of each compilation
     Public
       Compiler:TCompiledList;
@@ -62,7 +62,7 @@ Type
      FOnError:TOnCompileMessage;
      LastDollar: Integer;
      SourcePath: string;
-    procedure DoCompile(Asmfile: TAsmFile; Fn: String);
+    procedure DoCompile(Asmfile: TAsmFile; Fn: String;clrGlobal:boolean=true);
     protected
     procedure DoOnAfterCompile(Asmfile: TAsmFile; Fn: String); virtual;
     procedure DoOnBeforeCompile(Asmfile: TAsmFile; Fn: String); virtual;
@@ -121,13 +121,14 @@ begin
   GlobalLabels.CommaText:=uasm.GlobalLabels.CommaText;
 end;
 
-procedure TAsmFile.DoCompile(const AFile: string);
+procedure TAsmFile.DoCompile(const AFile: string;clrglobal:boolean=true);
 Var sl:Tstringlist;
     s,PRJPATH:String;
 begin
   FileName:=AFile;
   prjpath:=extractfilepath(Filename);
   uasm.AsmLabels.Clear;
+//  if clrglobal then
   uasm.GlobalLabels.Clear;
   SetProps;
   sl:=Tstringlist.create;
@@ -183,7 +184,7 @@ Begin
     FOnAfterCompile(asmfile,Fn);
 end;
 
-Procedure TProjectLinker.DoCompile(Asmfile:TAsmFile;Fn:String);
+Procedure TProjectLinker.DoCompile(Asmfile:TAsmFile;Fn:String;clrGlobal:boolean=true);
 Begin
    DoOnBeforeCompile(AsmFile,Fn);
    asmfile.Compiler.MakeAbsolute(LastDollar);
@@ -192,7 +193,7 @@ Begin
      asmfile.Compiler.AddError('File ['+fn+'] not found');
    End
    else
-    asmfile.DoCompile(SourcePath+Fn);
+    asmfile.DoCompile(SourcePath+Fn,clrGlobal);
    DoOnAfterCompile(AsmFile,Fn);
 end;
 
@@ -230,13 +231,15 @@ begin
   end;
 
   //Compile Pass1 and Pass 2 (Not Relative)
+  //PASS1
   for i := 0 to Files.Count - 1 do
   Begin
    asmfile:=TAsmFile.create;
    asmfiles.Add(asmfile);
+
    if files[i][1]=';' then continue;
    try
-     DoCompile(asmfile,Files[i]); //Compiling Pass1 and Pass 2 (Not for relative)
+     DoCompile(asmfile,Files[i]); //Compiling Pass1
    except
       on e:exception do
        raise Exception.Create(e.message);
@@ -245,21 +248,9 @@ begin
      LastDollar:=asmFile.Compiler.Dollar;
   end;
 
-{  asmfile:=nil; LastDollar:=-1;
-  //Compile Pass 2 (Just Relative)
-  for i := 0 to Files.Count - 1 do //Just for Relative Pass 2
-  Begin
-   if asmfile<>nil then
-     LastDollar:=asmFile.Compiler.Dollar;
-   asmfile:=TAsmFile.create;
-   asmfiles.Add(asmfile);
-   If not asmFile.Compiler.IsRelative then continue;
-   Assert(LastDollar<>-1);
-   asmfile.Compiler.MakeAbsolute(LastDollar);
-   DoCompile(asmfile,Files[i]); //Compiling  Pass 1 and 2 (for relative)
 
-  end;
- }
+
+
   uasm.AsmLabels.Text:='';
 
 
