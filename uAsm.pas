@@ -1533,7 +1533,7 @@ Begin
                           p.Status:=csCMDOK;
                         End //If
                          Else  //if k=-99999 then PASS3
-                         if doAnotherPass=0 then
+                         if (doAnotherPass=0) OR (doanotherpass>1000000) then
                          Begin
                             if isLinking then
                                AddError(PassStr+':Expression ['+lbl+'] not found CMD:['+P.OrigCmd+']!')
@@ -1584,7 +1584,7 @@ Begin
                             end
                            End// End this time ok
                            Else  //if k=-99999 then PASS3
-                           if doanotherpass=0 then
+                           if (doanotherpass=0) OR (doanotherpass>1000000) then
                            Begin
                             if (k=ASMNOTFOUND) then
                             Begin
