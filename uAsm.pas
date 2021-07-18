@@ -1533,7 +1533,11 @@ Begin
                           p.Status:=csCMDOK;
                         End //If
                          Else  //if k=-99999 then PASS3
+<<<<<<< HEAD
                          if (doanotherpass=0) or (doanotherpass>=1000000) then
+=======
+                         if doAnotherPass=0 then
+>>>>>>> parent of f6a4d2e... fix the last pass didn't produce errors
                          Begin
                             if isLinking then
                                AddError(PassStr+':Expression ['+lbl+'] not found CMD:['+P.OrigCmd+']!')
@@ -1584,7 +1588,11 @@ Begin
                             end
                            End// End this time ok
                            Else  //if k=-99999 then PASS3
+<<<<<<< HEAD
                            if (doanotherpass=0) or (doanotherpass>=1000000) then
+=======
+                           if doanotherpass=0 then
+>>>>>>> parent of f6a4d2e... fix the last pass didn't produce errors
                            Begin
                             if (k=ASMNOTFOUND) then
                             Begin
