@@ -41,7 +41,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.09';
+  Version='1.10';
 
 type
 
