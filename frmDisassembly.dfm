@@ -516,10 +516,6 @@ object frmdis: Tfrmdis
         object TSProj: TTabSheet
           Caption = 'Project'
           ImageIndex = 6
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object ProjText: TMemo
             Left = 0
             Top = 0
@@ -546,10 +542,6 @@ object frmdis: Tfrmdis
         end
         object TSSource: TTabSheet
           Caption = 'Source'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object asmText: TMemo
             Left = 0
             Top = 0
@@ -574,10 +566,6 @@ object frmdis: Tfrmdis
         object TSBinary: TTabSheet
           Caption = 'Compiled (Binary)'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object BinText: TMemo
             Left = 0
             Top = 0
@@ -606,10 +594,6 @@ object frmdis: Tfrmdis
         object TSSymbols: TTabSheet
           Caption = 'Symbols'
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object memLabels: TMemo
             Left = 0
             Top = 0
@@ -635,10 +619,6 @@ object frmdis: Tfrmdis
         object TSGlob: TTabSheet
           Caption = 'Global Symbols'
           ImageIndex = 5
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object GlobLabels: TMemo
             Left = 0
             Top = 0
@@ -664,10 +644,6 @@ object frmdis: Tfrmdis
         object TSMessages: TTabSheet
           Caption = 'Messages'
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object memMessages: TMemo
             Left = 0
             Top = 0
@@ -690,10 +666,6 @@ object frmdis: Tfrmdis
         object TSErrors: TTabSheet
           Caption = 'Errors'
           ImageIndex = 4
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object memErrors: TMemo
             Left = 0
             Top = 0
@@ -840,6 +812,7 @@ object frmdis: Tfrmdis
             TabOrder = 0
             OnDblClick = AdTerminal1DblClick
             OnKeyPress = AdTerminal1KeyPress
+            OnKeyUp = AdTerminal1KeyDown
           end
           object Button1: TButton
             Left = 74
@@ -904,6 +877,7 @@ object frmdis: Tfrmdis
             Top = 31
             Width = 137
             Height = 29
+            Max = 200
             ParentShowHint = False
             Position = 1
             ShowHint = True

@@ -41,7 +41,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.10';
+  Version='1.12';
 
 type
 
@@ -225,6 +225,8 @@ type
     procedure Button16Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure Button17Click(Sender: TObject);
+    procedure AdTerminal1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     msgref:integer;
     cx,cy:Integer;
@@ -308,10 +310,65 @@ begin
  adTerminal1.Clearall;
 end;
 
+function checkkey(var key:word):boolean;
+Begin
+ //if key=8 then   //backspace
+ // key:=6
+ //else
+ if key=39 then
+  key:=3
+ else
+ if key=37 then
+  key:=4
+ else
+ if key=38 then
+  key:=11
+ else
+ if key=40 then
+  key:=10
+ else
+ if key=46 then
+  key:=2
+ else
+ if key=45 then
+  key:=1
+ else
+ if key=116 then
+  key:=165
+ else
+ if key=117 then
+  key:=166
+ else
+ if key=118 then
+  key:=167
+ else
+ if key=119 then
+  key:=168;
+
+
+ if key in [1,2,3,4,6,10,11,165,166,167,168] then
+   result:=true
+ else result:=false;
+End;
+
+procedure Tfrmdis.AdTerminal1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ if checkkey(key) then
+ begin
+   apdcomport1.PutChar(ansichar(key));
+ end;
+
+end;
+
 procedure Tfrmdis.AdTerminal1KeyPress(Sender: TObject; var Key: Char);
 begin
- if key=#8 then   //backspace
+  if key=#8 then   //backspace
   key:=#6;
+
+
+
+
  if checkbox4.Checked then
  Begin
   if key=#13 then
