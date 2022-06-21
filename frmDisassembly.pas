@@ -41,7 +41,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.12';
+  Version='1.13';
 
 type
 
@@ -166,6 +166,7 @@ type
     Button16: TButton;
     ComboBox1: TComboBox;
     Button17: TButton;
+    Button18: TButton;
     procedure asmTextKeyPress(Sender: TObject; var Key: Char);
     procedure asmTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure BinTextKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -227,6 +228,7 @@ type
     procedure Button17Click(Sender: TObject);
     procedure AdTerminal1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure Button18Click(Sender: TObject);
   private
     msgref:integer;
     cx,cy:Integer;
@@ -287,7 +289,7 @@ var
 
 implementation
 uses ustrings,uDisAsm,math,Printers,uAsm,uNBTypes, uAsmPrj, frmAbout,
-  frmChrDsgn,inifiles;
+  frmChrDsgn,inifiles,dateutils;
 
 {$R *.dfm}
 
@@ -1155,6 +1157,26 @@ end;
 procedure Tfrmdis.Button17Click(Sender: TObject);
 begin
   setz80baudrate;
+end;
+
+procedure Tfrmdis.Button18Click(Sender: TObject);
+var s,dow,dts:string;
+    dt:Tdatetime;
+    o:ansichar;
+    i:integer;
+begin
+  dt:=now;
+  dow:=inttostr(DayOfTheWeek(dt));
+  FormatTime('hh:mm:ss') ;
+  DateTimeToString(s, 'hh:mm:ss', dt);
+  DateTimeToString(dts, 'dd/mm/yy', dt);
+  s:='Q'+dts+' '+dow+' '+s;
+  //showmessage(s);
+  for i:=1  to length(s) do
+  Begin
+    o:=AnsiChar(s[i]);
+    if not  SendChar(o) then break;
+  End;
 end;
 
 //Send a Program through RS232 to NBLaptop

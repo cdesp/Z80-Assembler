@@ -879,7 +879,6 @@ object frmdis: Tfrmdis
             Height = 29
             Max = 200
             ParentShowHint = False
-            Position = 1
             ShowHint = True
             TabOrder = 7
             OnChange = TrackBar1Change
@@ -1118,8 +1117,9 @@ object frmdis: Tfrmdis
             Top = 2
             Width = 68
             Height = 21
+            ItemIndex = 4
             TabOrder = 23
-            Text = '9600'
+            Text = '115200'
             OnChange = ComboBox1Change
             Items.Strings = (
               '9600'
@@ -1137,6 +1137,15 @@ object frmdis: Tfrmdis
             Caption = 'set Z80 baud'
             TabOrder = 24
             OnClick = Button17Click
+          end
+          object Button18: TButton
+            Left = 107
+            Top = 150
+            Width = 75
+            Height = 25
+            Caption = 'Set date'
+            TabOrder = 25
+            OnClick = Button18Click
           end
         end
       end
@@ -1189,7 +1198,7 @@ object frmdis: Tfrmdis
   end
   object ApdComPort1: TApdComPort
     ComNumber = 1
-    Baud = 9600
+    Baud = 115200
     AutoOpen = False
     DTR = False
     RTS = False
