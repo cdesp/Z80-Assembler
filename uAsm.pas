@@ -1223,8 +1223,9 @@ Begin
       if IsRegister(l2) and Not IsRegister(l1) then
        Lbl:=l1;
         //LD (IY+##),## //TODO: LD (IY+##),##
-      if SameText(p.instruct,'SET') or SameText(p.instruct,'BIT') or
-            SameText(p.instruct,'RES') then
+        //TODO:CHECK THE FOLLOWING COMMAND
+      if p.haslabel and (SameText(p.instruct,'SET') or SameText(p.instruct,'BIT') or
+            SameText(p.instruct,'RES')) then
            lbl:=l2; //cause l1 is already used
       if InBrackets(Lbl) then
          Lbl:= RemoveBrackets(Lbl);

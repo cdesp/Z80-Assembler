@@ -48,7 +48,7 @@ Type
       FileName:String;
       Constructor Create;
       Destructor destroy;Override;
-      
+
       Procedure SetProps;
   end;
 
@@ -69,6 +69,7 @@ Type
     Public
      Files:TStringlist; //the files to link
      AsmFiles:TList; //  a list of TAsmFile one for each file
+     asmfile:TAsmFile; //current asmfile
      Errors:String;
      FinalCompiler:TCompiledList;
      Constructor Create;
@@ -199,7 +200,6 @@ end;
 
 function TProjectLinker.DoLink(lnkFiles, APath: String): Boolean;
 Var i,j:integer;
-    asmfile:TAsmFile;
     nm,errmsg:string;
     vl,vl2:Integer;
     sl:tstringlist;

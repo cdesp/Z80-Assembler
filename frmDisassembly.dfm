@@ -12,14 +12,12 @@ object frmdis: Tfrmdis
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
   Position = poScreenCenter
   ScreenSnap = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
     Left = 0

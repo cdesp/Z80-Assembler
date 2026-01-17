@@ -41,7 +41,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.13';
+  Version='1.16';
 
 type
 
@@ -314,9 +314,12 @@ end;
 
 function checkkey(var key:word):boolean;
 Begin
- //if key=8 then   //backspace
- // key:=6
- //else
+ if key=35 then   //END
+  key:=29 //$1D
+ else
+ if key=36 then   //HOME
+  key:=28 //$1C
+ else
  if key=39 then
   key:=3
  else
@@ -345,10 +348,13 @@ Begin
   key:=167
  else
  if key=119 then
-  key:=168;
+  key:=168
+ else
+ if key=19 then       //BREAK ->STOP
+  key:=254;
 
 
- if key in [1,2,3,4,6,10,11,165,166,167,168] then
+ if key in [1,2,3,4,6,10,11,27,28,29,165,166,167,168,254] then
    result:=true
  else result:=false;
 End;
@@ -356,7 +362,7 @@ End;
 procedure Tfrmdis.AdTerminal1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
- if checkkey(key) then
+ IF checkkey(key) THEN
  begin
    apdcomport1.PutChar(ansichar(key));
  end;
@@ -692,8 +698,8 @@ begin
    ProjText.Lines.LoadFromFile(OpenTextFileDialog1.FileName);
   OpenTextFileDialog1.filter:=f1;
   OpenTextFileDialog1.title:=f2;
-
  end;
+ SetCurrentDir(extractfilePath(OpenTextFileDialog1.FileName));
  statusbar1.panels[2].text:=SaveTextFileDialog1.FileName;
 end;
 
@@ -1553,8 +1559,12 @@ Begin
        msg:=msg+'   ['+CurFile+']';
    end;
    MemMessages.Lines.add(msg);
-   if Compiler.ISError then
-    memErrors.Lines.add(msg);
+   if assigned(Compiler) and  Compiler.ISError then
+    memErrors.Lines.add(msg)
+   else
+   if assigned(projectlinker) then
+    if ProjectLinker.asmfile.Compiler.ISError then
+     memErrors.Lines.add(msg);
  //  Tmemohack(MemMessages).SetCaretPos(Point(5,MemMessages.Lines.Count-1));
  //  Application.ProcessMessages;
    SetSrcCurrentLine;
