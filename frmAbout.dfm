@@ -5,17 +5,15 @@ object fAbout: TfAbout
   BorderStyle = bsToolWindow
   Caption = 'About Z80 Assembler'
   ClientHeight = 244
-  ClientWidth = 367
+  ClientWidth = 393
   Color = clSkyBlue
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
     Left = 16
@@ -72,10 +70,10 @@ object fAbout: TfAbout
   object Label8: TLabel
     Left = 109
     Top = 138
-    Width = 238
+    Width = 267
     Height = 16
     Cursor = crHandPoint
-    Caption = 'http://www.newbrainemu.eu/elecprojects'
+    Caption = 'https://newbrainemu.eu/category/electronics/'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
     Font.Height = -13
@@ -85,9 +83,9 @@ object fAbout: TfAbout
     OnClick = Label8Click
   end
   object Label9: TLabel
-    Left = 209
+    Left = 303
     Top = 20
-    Width = 150
+    Width = 73
     Height = 24
     Alignment = taRightJustify
     Caption = 'Version'
@@ -107,7 +105,7 @@ object fAbout: TfAbout
     Caption = 'Portions by Pasmulator'
   end
   object Button1: TButton
-    Left = 148
+    Left = 164
     Top = 200
     Width = 75
     Height = 25

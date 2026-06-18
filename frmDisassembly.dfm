@@ -382,13 +382,13 @@ object frmdis: Tfrmdis
           Height = 31
         end
         object Bevel3: TBevel
-          Left = 321
+          Left = 377
           Top = 6
           Width = 6
           Height = 29
         end
         object SpeedButton10: TSpeedButton
-          Left = 333
+          Left = 389
           Top = 2
           Width = 31
           Height = 33
@@ -472,7 +472,7 @@ object frmdis: Tfrmdis
         object CheckBox1: TCheckBox
           Left = 218
           Top = 3
-          Width = 97
+          Width = 107
           Height = 17
           Hint = 
             'When saving to file zeroes are put until the memory address reac' +
@@ -492,6 +492,19 @@ object frmdis: Tfrmdis
           ParentShowHint = False
           ShowHint = True
           TabOrder = 3
+        end
+        object CheckBox5: TCheckBox
+          Left = 321
+          Top = 3
+          Width = 50
+          Height = 17
+          Hint = 
+            'When saving to file zeroes are put until the memory address reac' +
+            'hed'
+          Caption = 'HEX'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 4
         end
       end
       object PageControl2: TPageControl
@@ -684,115 +697,22 @@ object frmdis: Tfrmdis
           end
         end
         object TSZ80: TTabSheet
-          Caption = 'Send to Z80'
+          Caption = 'Serial Comms'
           ImageIndex = 7
-          object Label8: TLabel
-            Left = 10
-            Top = 20
-            Width = 39
-            Height = 13
-            Caption = 'Address'
-          end
-          object Label9: TLabel
-            Left = 155
-            Top = 54
-            Width = 137
-            Height = 18
-            Alignment = taCenter
-            AutoSize = False
-            Caption = 'tesTING'
-            Color = clBlue
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlue
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentColor = False
-            ParentFont = False
-            Transparent = False
-          end
-          object cominfolabel: TLabel
-            Left = 3
-            Top = 0
-            Width = 187
-            Height = 16
-            Caption = 'COM Port 1 at 9600,N,8,1 SW'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label10: TLabel
-            Left = 791
-            Top = 34
-            Width = 6
-            Height = 13
-            Caption = '0'
-          end
-          object Label11: TLabel
-            Left = 848
-            Top = 34
-            Width = 6
-            Height = 13
-            Caption = '0'
-          end
-          object Shape1: TShape
-            Left = 532
-            Top = 3
-            Width = 17
-            Height = 17
-            Hint = 'DTR'
-            Brush.Color = clRed
-            ParentShowHint = False
-            Pen.Color = clRed
-            Shape = stCircle
-            ShowHint = True
-          end
-          object Shape2: TShape
-            Left = 555
-            Top = 3
-            Width = 17
-            Height = 17
-            Hint = 'DSR'
-            Brush.Color = clRed
-            ParentShowHint = False
-            Pen.Color = clRed
-            Shape = stCircle
-            ShowHint = True
-          end
-          object Label1: TLabel
-            Left = 58
-            Top = 60
-            Width = 6
-            Height = 13
-            Alignment = taRightJustify
-            Caption = '0'
-            Color = clTeal
-            ParentColor = False
-            Transparent = False
-          end
-          object Label4: TLabel
-            Left = 400
-            Top = 34
-            Width = 27
-            Height = 13
-            Caption = 'Delay'
-          end
-          object SpeedButton5: TSpeedButton
-            Left = 679
-            Top = 6
-            Width = 19
-            Height = 17
-            Caption = 'R'
-            OnClick = SpeedButton5Click
+          object Splitter1: TSplitter
+            Left = 0
+            Top = 597
+            Width = 887
+            Height = 3
+            Cursor = crVSplit
+            Align = alBottom
+            ExplicitTop = 554
           end
           object AdTerminal1: TAdTerminal
             Left = 0
-            Top = 178
+            Top = 192
             Width = 887
-            Height = 376
+            Height = 405
             CaptureFile = 'APROTERM.CAP'
             ComPort = ApdComPort1
             PasteToScreen = True
@@ -812,338 +732,584 @@ object frmdis: Tfrmdis
             OnKeyPress = AdTerminal1KeyPress
             OnKeyUp = AdTerminal1KeyDown
           end
-          object Button1: TButton
-            Left = 74
-            Top = 29
-            Width = 75
-            Height = 25
-            Caption = 'Send Program'
-            TabOrder = 1
-            OnClick = Button1Click
-          end
-          object ProgressBar1: TProgressBar
-            Left = 155
-            Top = 31
-            Width = 137
-            Height = 25
-            TabOrder = 2
-          end
-          object Edit1: TEdit
-            Left = 2
-            Top = 33
-            Width = 65
-            Height = 21
-            Alignment = taRightJustify
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 3
-            Text = '0'
-            OnChange = Edit1Change
-          end
-          object Button2: TButton
-            Left = 74
-            Top = 60
-            Width = 75
-            Height = 25
-            Caption = 'Execute'
-            TabOrder = 4
-            OnClick = Button2Click
-          end
-          object Edit2: TEdit
-            Left = 2
-            Top = 93
-            Width = 65
-            Height = 21
-            Alignment = taRightJustify
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 5
-            Text = '0'
-            OnChange = Edit2Change
-          end
-          object Button3: TButton
-            Left = 74
-            Top = 91
-            Width = 75
-            Height = 25
-            Caption = 'Send byte'
-            TabOrder = 6
-            OnClick = Button3Click
-          end
-          object TrackBar1: TTrackBar
-            Left = 433
-            Top = 31
-            Width = 137
-            Height = 29
-            Max = 200
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 7
-            OnChange = TrackBar1Change
-          end
-          object Button5: TButton
-            Left = 791
-            Top = 3
-            Width = 83
-            Height = 25
-            Hint = 'Send the selected file'
-            Caption = 'Send Basic File'
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 8
-            OnClick = Button5Click
-          end
-          object Button6: TButton
-            Left = 791
-            Top = 53
-            Width = 83
-            Height = 25
-            Caption = 'stop'
-            TabOrder = 9
-            OnClick = Button6Click
-          end
           object ListBox1: TListBox
             Left = 0
-            Top = 554
+            Top = 600
             Width = 887
-            Height = 103
+            Height = 57
             Align = alBottom
             ItemHeight = 13
-            TabOrder = 10
+            TabOrder = 1
             OnDblClick = ListBox1DblClick
           end
-          object Button7: TButton
-            Left = 298
-            Top = 31
-            Width = 80
-            Height = 25
-            Caption = 'Select COM'
-            TabOrder = 11
-            OnClick = Button7Click
-          end
-          object Button8: TButton
-            Left = 374
+          object PageControl3: TPageControl
+            Left = 0
             Top = 0
-            Width = 79
-            Height = 25
-            Caption = 'HW FLOW'
-            TabOrder = 12
-            OnClick = Button8Click
-          end
-          object Button9: TButton
-            Left = 451
-            Top = 0
-            Width = 79
-            Height = 25
-            Caption = 'NO FLOW'
-            TabOrder = 13
-            OnClick = Button9Click
-          end
-          object Button11: TButton
-            Left = -2
-            Top = 119
-            Width = 70
-            Height = 25
-            Caption = 'TESTCOMM'
-            TabOrder = 14
-            OnClick = Button11Click
-          end
-          object Button12: TButton
-            Left = 74
-            Top = 119
-            Width = 75
-            Height = 25
-            Caption = 'TEST RECV'
-            TabOrder = 15
-            OnClick = Button12Click
-          end
-          object Button14: TButton
-            Left = 791
-            Top = 137
-            Width = 83
-            Height = 25
-            Caption = 'Convert color'
-            TabOrder = 16
-            OnClick = Button14Click
-          end
-          object GroupBox1: TGroupBox
-            Left = 193
-            Top = 76
-            Width = 170
-            Height = 90
-            Caption = 'Retreive Data'
-            TabOrder = 17
-            object Label2: TLabel
-              Left = 7
-              Top = 18
-              Width = 66
-              Height = 13
-              Caption = 'Start Address'
+            Width = 887
+            Height = 192
+            ActivePage = TabSheet4
+            Align = alClient
+            TabOrder = 2
+            ExplicitLeft = 83
+            ExplicitTop = 144
+            ExplicitHeight = 241
+            object TabSheet2: TTabSheet
+              Caption = 'ComPort'
+              object cominfolabel: TLabel
+                Left = 3
+                Top = 3
+                Width = 187
+                Height = 16
+                Caption = 'COM Port 1 at 9600,N,8,1 SW'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object Label4: TLabel
+                Left = 309
+                Top = 37
+                Width = 27
+                Height = 13
+                Caption = 'Delay'
+              end
+              object Shape1: TShape
+                Left = 237
+                Top = 3
+                Width = 17
+                Height = 17
+                Hint = 'DTR (w)'
+                Brush.Color = clRed
+                ParentShowHint = False
+                Pen.Color = clRed
+                Shape = stCircle
+                ShowHint = True
+                OnMouseUp = Shape1MouseUp
+              end
+              object Shape2: TShape
+                Left = 260
+                Top = 3
+                Width = 17
+                Height = 17
+                Hint = 'DSR'
+                Brush.Color = clRed
+                ParentShowHint = False
+                Pen.Color = clRed
+                Shape = stCircle
+                ShowHint = True
+              end
+              object Shape3: TShape
+                Left = 283
+                Top = 3
+                Width = 17
+                Height = 17
+                Hint = 'RTS (w)'
+                Brush.Color = clRed
+                ParentShowHint = False
+                Pen.Color = clRed
+                Shape = stCircle
+                ShowHint = True
+                OnMouseUp = Shape3MouseUp
+              end
+              object Shape4: TShape
+                Left = 306
+                Top = 3
+                Width = 17
+                Height = 17
+                Hint = 'CTS'
+                Brush.Color = clRed
+                ParentShowHint = False
+                Pen.Color = clRed
+                Shape = stCircle
+                ShowHint = True
+              end
+              object ComboBox1: TComboBox
+                Left = 99
+                Top = 76
+                Width = 68
+                Height = 21
+                ItemIndex = 4
+                TabOrder = 0
+                Text = '115200'
+                OnChange = ComboBox1Change
+                Items.Strings = (
+                  '9600'
+                  '19200'
+                  '38400'
+                  '56000'
+                  '115200'
+                  '128000')
+              end
+              object Button17: TButton
+                Left = 3
+                Top = 71
+                Width = 75
+                Height = 25
+                Caption = 'set Z80 baud'
+                TabOrder = 1
+                OnClick = Button17Click
+              end
+              object Button7: TButton
+                Left = 3
+                Top = 34
+                Width = 80
+                Height = 25
+                Caption = 'Select COM'
+                TabOrder = 2
+                OnClick = Button7Click
+              end
+              object TrackBar1: TTrackBar
+                Left = 342
+                Top = 34
+                Width = 137
+                Height = 29
+                Max = 200
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 3
+                OnChange = TrackBar1Change
+              end
+              object Button8: TButton
+                Left = 190
+                Top = 34
+                Width = 79
+                Height = 25
+                Caption = 'HW FLOW'
+                TabOrder = 4
+                OnClick = Button8Click
+              end
+              object Button9: TButton
+                Left = 190
+                Top = 73
+                Width = 79
+                Height = 25
+                Caption = 'NO FLOW'
+                TabOrder = 5
+                OnClick = Button9Click
+              end
+              object CheckBox4: TCheckBox
+                Left = 3
+                Top = 137
+                Width = 97
+                Height = 17
+                Caption = 'Terminal Echo'
+                TabOrder = 6
+                OnClick = CheckBox4Click
+              end
             end
-            object Label3: TLabel
-              Left = 96
-              Top = 18
-              Width = 56
-              Height = 13
-              Caption = 'No of Bytes'
+            object TabSheet3: TTabSheet
+              Caption = 'Z80'
+              ImageIndex = 1
+              object Label8: TLabel
+                Left = 13
+                Top = 11
+                Width = 39
+                Height = 13
+                Caption = 'Address'
+              end
+              object Label9: TLabel
+                Left = 158
+                Top = 45
+                Width = 137
+                Height = 18
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'tesTING'
+                Color = clBlue
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clBlue
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                ParentColor = False
+                ParentFont = False
+                Transparent = False
+              end
+              object Label1: TLabel
+                Left = 61
+                Top = 51
+                Width = 6
+                Height = 13
+                Alignment = taRightJustify
+                Caption = '0'
+                Color = clTeal
+                ParentColor = False
+                Transparent = False
+              end
+              object Edit1: TEdit
+                Left = 5
+                Top = 24
+                Width = 65
+                Height = 21
+                Alignment = taRightJustify
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 0
+                Text = '0'
+                OnChange = Edit1Change
+              end
+              object Button1: TButton
+                Left = 77
+                Top = 20
+                Width = 75
+                Height = 25
+                Caption = 'Send Program'
+                TabOrder = 1
+                OnClick = Button1Click
+              end
+              object ProgressBar1: TProgressBar
+                Left = 158
+                Top = 22
+                Width = 137
+                Height = 25
+                TabOrder = 2
+              end
+              object Button2: TButton
+                Left = 77
+                Top = 51
+                Width = 75
+                Height = 25
+                Caption = 'Execute'
+                TabOrder = 3
+                OnClick = Button2Click
+              end
+              object Edit2: TEdit
+                Left = 5
+                Top = 84
+                Width = 65
+                Height = 21
+                Alignment = taRightJustify
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 4
+                Text = '0'
+                OnChange = Edit2Change
+              end
+              object Button3: TButton
+                Left = 77
+                Top = 82
+                Width = 75
+                Height = 25
+                Caption = 'Send byte'
+                TabOrder = 5
+                OnClick = Button3Click
+              end
+              object Button11: TButton
+                Left = 1
+                Top = 110
+                Width = 70
+                Height = 25
+                Caption = 'TESTCOMM'
+                TabOrder = 6
+                OnClick = Button11Click
+              end
+              object Button12: TButton
+                Left = 77
+                Top = 110
+                Width = 75
+                Height = 25
+                Caption = 'TEST RECV'
+                TabOrder = 7
+                OnClick = Button12Click
+              end
+              object Button18: TButton
+                Left = 110
+                Top = 141
+                Width = 75
+                Height = 25
+                Caption = 'Set date'
+                TabOrder = 8
+                OnClick = Button18Click
+              end
+              object GroupBox1: TGroupBox
+                Left = 196
+                Top = 67
+                Width = 170
+                Height = 90
+                Caption = 'Retreive Data'
+                TabOrder = 9
+                object Label2: TLabel
+                  Left = 7
+                  Top = 18
+                  Width = 66
+                  Height = 13
+                  Caption = 'Start Address'
+                end
+                object Label3: TLabel
+                  Left = 96
+                  Top = 18
+                  Width = 56
+                  Height = 13
+                  Caption = 'No of Bytes'
+                end
+                object Edit6: TEdit
+                  Left = 3
+                  Top = 37
+                  Width = 75
+                  Height = 21
+                  ParentShowHint = False
+                  ShowHint = True
+                  TabOrder = 0
+                  Text = '0000'
+                  TextHint = 'START ADDR'
+                  OnChange = Edit6Change
+                end
+                object Edit7: TEdit
+                  Left = 93
+                  Top = 37
+                  Width = 64
+                  Height = 21
+                  ParentShowHint = False
+                  ShowHint = True
+                  TabOrder = 1
+                  Text = '0'
+                  TextHint = 'LENGTH BYTES'
+                  OnChange = Edit7Change
+                end
+                object Button13: TButton
+                  Left = 53
+                  Top = 64
+                  Width = 75
+                  Height = 25
+                  Caption = 'GET DATA'
+                  TabOrder = 2
+                  OnClick = Button13Click
+                end
+              end
+              object GroupBox2: TGroupBox
+                Left = 372
+                Top = 69
+                Width = 188
+                Height = 88
+                Caption = 'Send Chars/Words'
+                TabOrder = 10
+                object Label12: TLabel
+                  Left = 161
+                  Top = 15
+                  Width = 16
+                  Height = 13
+                  Alignment = taRightJustify
+                  Caption = '0/0'
+                end
+                object Edit5: TEdit
+                  Left = 3
+                  Top = 35
+                  Width = 121
+                  Height = 21
+                  TabOrder = 0
+                  Text = 'N'
+                end
+                object Button4: TButton
+                  Left = 3
+                  Top = 62
+                  Width = 75
+                  Height = 25
+                  Caption = 'Send CHARS'
+                  TabOrder = 1
+                  OnClick = Button4Click
+                end
+                object CheckBox2: TCheckBox
+                  Left = 127
+                  Top = 37
+                  Width = 58
+                  Height = 17
+                  Caption = 'Send CR'
+                  TabOrder = 2
+                end
+                object Button10: TButton
+                  Left = 110
+                  Top = 62
+                  Width = 75
+                  Height = 25
+                  Caption = 'Abort'
+                  TabOrder = 3
+                  OnClick = Button10Click
+                end
+              end
             end
-            object Edit6: TEdit
-              Left = 3
-              Top = 37
-              Width = 75
-              Height = 21
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 0
-              Text = '0000'
-              TextHint = 'START ADDR'
-              OnChange = Edit6Change
+            object TabSheet4: TTabSheet
+              Caption = 'Flash'
+              ImageIndex = 2
+              object Panel1: TPanel
+                Left = 0
+                Top = 0
+                Width = 593
+                Height = 164
+                Align = alClient
+                TabOrder = 0
+                ExplicitWidth = 375
+                object lblFLCnter: TLabel
+                  Left = 168
+                  Top = 80
+                  Width = 30
+                  Height = 13
+                  Caption = '00000'
+                end
+                object lblEAddr: TLabeledEdit
+                  Left = 8
+                  Top = 16
+                  Width = 121
+                  Height = 21
+                  EditLabel.Width = 39
+                  EditLabel.Height = 13
+                  EditLabel.Caption = 'Address'
+                  TabOrder = 0
+                  Text = '0'
+                end
+                object lblESize: TLabeledEdit
+                  Left = 8
+                  Top = 56
+                  Width = 121
+                  Height = 21
+                  EditLabel.Width = 19
+                  EditLabel.Height = 13
+                  EditLabel.Caption = 'Size'
+                  TabOrder = 1
+                  Text = '10'
+                end
+                object btnFlashSend: TButton
+                  Left = 160
+                  Top = 16
+                  Width = 75
+                  Height = 25
+                  Caption = 'Flash Memory'
+                  TabOrder = 2
+                  OnClick = btnFlashSendClick
+                end
+                object btnFlashRead: TButton
+                  Left = 160
+                  Top = 47
+                  Width = 75
+                  Height = 25
+                  Hint = 'V'
+                  Caption = 'Read Flash'
+                  TabOrder = 3
+                  OnClick = btnFlashReadClick
+                end
+                object btnFLInfo: TButton
+                  Left = 256
+                  Top = 47
+                  Width = 75
+                  Height = 25
+                  Caption = 'Read Flash ID'
+                  TabOrder = 4
+                  OnClick = btnFLInfoClick
+                end
+                object Button19: TButton
+                  Left = 352
+                  Top = 48
+                  Width = 75
+                  Height = 25
+                  Hint = 'T'
+                  Caption = 'Button19'
+                  TabOrder = 5
+                  OnClick = btnFlashReadClick
+                end
+              end
+              object FileListBox2: TFileListBox
+                Left = 593
+                Top = 0
+                Width = 286
+                Height = 164
+                Align = alRight
+                ItemHeight = 13
+                Mask = '*.bin'
+                TabOrder = 1
+                OnClick = FileListBox2Click
+                OnDblClick = FileListBox2DblClick
+                ExplicitLeft = 592
+                ExplicitTop = 1
+                ExplicitHeight = 162
+              end
             end
-            object Edit7: TEdit
-              Left = 93
-              Top = 37
-              Width = 64
-              Height = 21
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 1
-              Text = '0'
-              TextHint = 'LENGTH BYTES'
-              OnChange = Edit7Change
+            object TabSheet5: TTabSheet
+              Caption = 'Send Basic File'
+              ImageIndex = 3
+              object SpeedButton5: TSpeedButton
+                Left = 121
+                Top = 9
+                Width = 19
+                Height = 17
+                Caption = 'R'
+                OnClick = SpeedButton5Click
+              end
+              object Label10: TLabel
+                Left = 287
+                Top = 35
+                Width = 6
+                Height = 13
+                Caption = '0'
+              end
+              object Label11: TLabel
+                Left = 324
+                Top = 35
+                Width = 6
+                Height = 13
+                Caption = '0'
+              end
+              object Button15: TButton
+                Left = 18
+                Top = 4
+                Width = 97
+                Height = 25
+                Caption = 'Select Directory'
+                TabOrder = 0
+                OnClick = Button15Click
+              end
+              object Button5: TButton
+                Left = 247
+                Top = 4
+                Width = 83
+                Height = 25
+                Hint = 'Send the selected file'
+                Caption = 'Send Basic File'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 1
+                OnClick = Button5Click
+              end
+              object Button6: TButton
+                Left = 247
+                Top = 54
+                Width = 83
+                Height = 25
+                Caption = 'stop'
+                TabOrder = 2
+                OnClick = Button6Click
+              end
+              object Button16: TButton
+                Left = 247
+                Top = 85
+                Width = 83
+                Height = 25
+                Hint = 'Send the text from the source tab'
+                Caption = 'Send SRC text'
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 3
+                OnClick = Button16Click
+              end
+              object FileListBox1: TFileListBox
+                Left = 18
+                Top = 35
+                Width = 177
+                Height = 116
+                ItemHeight = 13
+                Mask = '*.bas;*.bbc;*.imp;*.txt'
+                TabOrder = 4
+              end
+              object Button14: TButton
+                Left = 319
+                Top = 185
+                Width = 83
+                Height = 25
+                Caption = 'Convert color'
+                TabOrder = 5
+                OnClick = Button14Click
+              end
             end
-            object Button13: TButton
-              Left = 53
-              Top = 64
-              Width = 75
-              Height = 25
-              Caption = 'GET DATA'
-              TabOrder = 2
-              OnClick = Button13Click
-            end
-          end
-          object FileListBox1: TFileListBox
-            Left = 576
-            Top = 29
-            Width = 177
-            Height = 137
-            ItemHeight = 13
-            Mask = '*.bas;*.bbc;*.imp;*.txt'
-            TabOrder = 18
-          end
-          object Button15: TButton
-            Left = 576
-            Top = 1
-            Width = 97
-            Height = 25
-            Caption = 'Select Directory'
-            TabOrder = 19
-            OnClick = Button15Click
-          end
-          object CheckBox4: TCheckBox
-            Left = 4
-            Top = 150
-            Width = 97
-            Height = 17
-            Caption = 'Terminal Echo'
-            TabOrder = 20
-            OnClick = CheckBox4Click
-          end
-          object GroupBox2: TGroupBox
-            Left = 369
-            Top = 78
-            Width = 188
-            Height = 88
-            Caption = 'Send Chars/Words'
-            TabOrder = 21
-            object Label12: TLabel
-              Left = 161
-              Top = 15
-              Width = 16
-              Height = 13
-              Alignment = taRightJustify
-              Caption = '0/0'
-            end
-            object Edit5: TEdit
-              Left = 3
-              Top = 35
-              Width = 121
-              Height = 21
-              TabOrder = 0
-              Text = 'N'
-            end
-            object Button4: TButton
-              Left = 3
-              Top = 62
-              Width = 75
-              Height = 25
-              Caption = 'Send CHARS'
-              TabOrder = 1
-              OnClick = Button4Click
-            end
-            object CheckBox2: TCheckBox
-              Left = 127
-              Top = 37
-              Width = 58
-              Height = 17
-              Caption = 'Send CR'
-              TabOrder = 2
-            end
-            object Button10: TButton
-              Left = 110
-              Top = 62
-              Width = 75
-              Height = 25
-              Caption = 'Abort'
-              TabOrder = 3
-              OnClick = Button10Click
-            end
-          end
-          object Button16: TButton
-            Left = 791
-            Top = 84
-            Width = 83
-            Height = 25
-            Hint = 'Send the text from the source tab'
-            Caption = 'Send SRC text'
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 22
-            OnClick = Button16Click
-          end
-          object ComboBox1: TComboBox
-            Left = 224
-            Top = 2
-            Width = 68
-            Height = 21
-            ItemIndex = 4
-            TabOrder = 23
-            Text = '115200'
-            OnChange = ComboBox1Change
-            Items.Strings = (
-              '9600'
-              '19200'
-              '38400'
-              '56000'
-              '115200'
-              '128000')
-          end
-          object Button17: TButton
-            Left = 298
-            Top = 0
-            Width = 75
-            Height = 25
-            Caption = 'set Z80 baud'
-            TabOrder = 24
-            OnClick = Button17Click
-          end
-          object Button18: TButton
-            Left = 107
-            Top = 150
-            Width = 75
-            Height = 25
-            Caption = 'Set date'
-            TabOrder = 25
-            OnClick = Button18Click
           end
         end
       end
@@ -1190,17 +1356,19 @@ object frmdis: Tfrmdis
   end
   object SaveBinFileDialog: TSaveTextFileDialog
     Filter = '*.bin|*.bin|*.hex|*.hex'
-    Title = 'Save Assembly Source'
+    Title = 'Save Assembly Binary'
     Left = 48
     Top = 264
   end
   object ApdComPort1: TApdComPort
     ComNumber = 1
     Baud = 115200
+    InSize = 16384
+    OutSize = 16384
     AutoOpen = False
     DTR = False
     RTS = False
-    BufferFull = 3072
+    BufferFull = 14745
     BufferResume = 1024
     TraceName = 'APRO.TRC'
     LogName = 'APRO.LOG'
@@ -1211,24 +1379,24 @@ object frmdis: Tfrmdis
     OnTriggerStatus = ApdComPort1TriggerStatus
     OnTriggerTimer = ApdComPort1TriggerTimer
     OnTriggerModemStatus = ApdComPort1TriggerModemStatus
-    Left = 425
-    Top = 1
+    Left = 865
+    Top = 73
   end
   object OpenTextFileDialog2: TOpenTextFileDialog
     Filter = 'Valid Files|*.bas|*.bas|*.bas|*.*|*.*'
     Title = 'Open Basic File'
-    Left = 808
-    Top = 24
+    Left = 800
+    Top = 88
   end
   object Timer1: TTimer
     Interval = 20
     OnTimer = Timer1Timer
-    Left = 553
-    Top = 145
+    Left = 857
+    Top = 169
   end
   object MainMenu1: TMainMenu
-    Left = 16
-    Top = 144
+    Left = 24
+    Top = 328
     object File1: TMenuItem
       Caption = 'File'
       object OpenProjectFile1: TMenuItem

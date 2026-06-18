@@ -36,12 +36,12 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, ExtDlgs, Buttons, Tabs, DockTabSet,
-  OoMisc, AdPort, ADTrmEmu, Vcl.Menus, Vcl.FileCtrl;
+  OoMisc, AdPort, ADTrmEmu, Vcl.Menus, Vcl.FileCtrl, Vcl.Mask, Vcl.TabNotBk;
 
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.16';
+  Version='1.17';
 
 type
 
@@ -107,31 +107,9 @@ type
     TSZ80: TTabSheet;
     AdTerminal1: TAdTerminal;
     ApdComPort1: TApdComPort;
-    Button1: TButton;
-    ProgressBar1: TProgressBar;
-    Edit1: TEdit;
-    Label8: TLabel;
-    Label9: TLabel;
-    Button2: TButton;
-    Edit2: TEdit;
-    Button3: TButton;
-    cominfolabel: TLabel;
-    TrackBar1: TTrackBar;
-    Button5: TButton;
     OpenTextFileDialog2: TOpenTextFileDialog;
-    Label10: TLabel;
-    Label11: TLabel;
-    Button6: TButton;
     ListBox1: TListBox;
-    Button7: TButton;
-    Button8: TButton;
-    Button9: TButton;
-    Shape1: TShape;
-    Shape2: TShape;
     Timer1: TTimer;
-    Button11: TButton;
-    Button12: TButton;
-    Button14: TButton;
     CheckBox1: TCheckBox;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
@@ -144,29 +122,69 @@ type
     SaveSourceFile1: TMenuItem;
     N1: TMenuItem;
     N2: TMenuItem;
-    Label1: TLabel;
     CheckBox3: TCheckBox;
+    CheckBox5: TCheckBox;
+    Splitter1: TSplitter;
+    PageControl3: TPageControl;
+    TabSheet2: TTabSheet;
+    cominfolabel: TLabel;
+    ComboBox1: TComboBox;
+    Button17: TButton;
+    Button7: TButton;
     Label4: TLabel;
+    TrackBar1: TTrackBar;
+    Button8: TButton;
+    Button9: TButton;
+    Shape1: TShape;
+    Shape2: TShape;
+    TabSheet3: TTabSheet;
+    TabSheet4: TTabSheet;
+    Label8: TLabel;
+    Edit1: TEdit;
+    Button1: TButton;
+    ProgressBar1: TProgressBar;
+    Label9: TLabel;
+    Button2: TButton;
+    Label1: TLabel;
+    Edit2: TEdit;
+    Button3: TButton;
+    Button11: TButton;
+    Button12: TButton;
+    Button18: TButton;
     GroupBox1: TGroupBox;
     Label2: TLabel;
     Label3: TLabel;
     Edit6: TEdit;
     Edit7: TEdit;
     Button13: TButton;
-    FileListBox1: TFileListBox;
-    Button15: TButton;
-    CheckBox4: TCheckBox;
-    SpeedButton5: TSpeedButton;
     GroupBox2: TGroupBox;
     Label12: TLabel;
     Edit5: TEdit;
     Button4: TButton;
     CheckBox2: TCheckBox;
     Button10: TButton;
+    TabSheet5: TTabSheet;
+    Button15: TButton;
+    SpeedButton5: TSpeedButton;
+    Button5: TButton;
+    Label10: TLabel;
+    Label11: TLabel;
+    Button6: TButton;
     Button16: TButton;
-    ComboBox1: TComboBox;
-    Button17: TButton;
-    Button18: TButton;
+    FileListBox1: TFileListBox;
+    Button14: TButton;
+    CheckBox4: TCheckBox;
+    Panel1: TPanel;
+    lblFLCnter: TLabel;
+    lblEAddr: TLabeledEdit;
+    lblESize: TLabeledEdit;
+    btnFlashSend: TButton;
+    btnFlashRead: TButton;
+    FileListBox2: TFileListBox;
+    Shape3: TShape;
+    Shape4: TShape;
+    btnFLInfo: TButton;
+    Button19: TButton;
     procedure asmTextKeyPress(Sender: TObject; var Key: Char);
     procedure asmTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure BinTextKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -229,6 +247,16 @@ type
     procedure AdTerminal1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure Button18Click(Sender: TObject);
+    procedure btnFlashSendClick(Sender: TObject);
+    procedure btnFLInfoClick(Sender: TObject);
+    procedure Shape1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Shape3MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure btnFlashReadClick(Sender: TObject);
+    procedure FileListBox2DblClick(Sender: TObject);
+    procedure FileListBox2Click(Sender: TObject);
+    procedure Button19Click(Sender: TObject);
   private
     msgref:integer;
     cx,cy:Integer;
@@ -272,6 +300,7 @@ type
     procedure Loadpath;
     procedure setcominfolabel;
     procedure setz80baudrate;
+    procedure PerformFlashErase(Sec: integer);
   public
     function IsProject: Boolean;
     { Public declarations }
@@ -289,7 +318,7 @@ var
 
 implementation
 uses ustrings,uDisAsm,math,Printers,uAsm,uNBTypes, uAsmPrj, frmAbout,
-  frmChrDsgn,inifiles,dateutils;
+  frmChrDsgn,inifiles,dateutils,System.IOUtils;
 
 {$R *.dfm}
 
@@ -410,6 +439,20 @@ if ApdComPort1.DTR then
   SHAPE2.Brush.Color:=clGreen
  else
   SHAPE2.Brush.Color:=clRed;
+ if ApdComPort1.RTS then
+  SHAPE3.Brush.Color:=clGreen
+ else
+  SHAPE3.Brush.Color:=clRed;
+ if ApdComPort1.CTS then
+  SHAPE4.Brush.Color:=clGreen
+ else
+  SHAPE4.Brush.Color:=clRed;
+
+// shape1.Refresh;
+// shape2.Refresh;
+//  shape3.Refresh;
+//   shape4.Refresh;
+
 End;
 
 procedure Tfrmdis.ComboBox1Change(Sender: TObject);
@@ -528,6 +571,26 @@ procedure Tfrmdis.File2Click(Sender: TObject);
 begin
    fAbout:=TfAbout.Create(self);
    fabout.ShowModal;
+end;
+
+procedure Tfrmdis.FileListBox2Click(Sender: TObject);
+var FileSize:integer;
+begin
+  FileSize := TFile.GetSize(Filelistbox2.FileName);
+  lblESize.Text:=inttostr(Filesize);
+end;
+
+procedure Tfrmdis.FileListBox2DblClick(Sender: TObject);
+Var Dir:String;
+begin
+   Dir:=Filelistbox2.Directory;
+   if SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt],0) then
+   Begin
+    Filelistbox2.Directory := Dir;
+    //save dir to options file.
+    savepath;
+   End;
+
 end;
 
 procedure Tfrmdis.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -741,6 +804,8 @@ procedure Tfrmdis.SpeedButton3Click(Sender: TObject);
 Var i:integer;
     errs:String;
 begin
+
+SetCurrentDir(extractfiledir(OpenTextFileDialog1.FileName));
 Errors:=0;
  msgref:=0;
 if not isproject then
@@ -842,6 +907,20 @@ Begin
 end;
 
 
+procedure Tfrmdis.Shape1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+   ApdComPort1.DTR:= not    ApdComPort1.DTR;
+   checkModemStatus;
+end;
+
+procedure Tfrmdis.Shape3MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+ ApdComPort1.RTS:= not    ApdComPort1.RTS;
+ checkModemStatus
+end;
+
 procedure Tfrmdis.ShowCompErrors;
 Begin
  StatusBar1.Panels[3].Text:='ERRORS:'+inttostr(Errors);
@@ -854,6 +933,140 @@ procedure Tfrmdis.BinTextKeyDown(Sender: TObject; var Key: Word; Shift:
     TShiftState);
 begin
 SetSrcCurrentLine;
+end;
+
+
+procedure Tfrmdis.PerformFlashErase(Sec:integer);
+Begin
+  SendChar('E');
+  ApdComPort1.PutString(IntToStr(sec) + #10);
+End;
+
+procedure Tfrmdis.btnFlashReadClick(Sender: TObject);
+var
+  FLAddr, FLSize: Integer;
+  fs: TFilestream;
+  bt:AnsiChar;
+  i:Integer;
+begin
+  FLAddr := strtoint(lblEAddr.text);      // Starting address
+  FLSize := strtoint(lblESize.text);   // Size in bytes
+  if Filelistbox2.Directory='' then
+   Filelistbox2.Directory:=extractfiledir(Application.exename);
+   adterminal1.Active:=false;
+   BUTTON11.Tag:=1;
+
+    fs:= TFilestream.Create(Filelistbox2.Directory+'\FlashRead.bin',fmCreate + fmOpenWrite);
+    try
+      Sendchar(AnsiChar(TButton(Sender).Hint[1])); //Read Block
+      ApdComPort1.PutString(inttostr(FLAddr) + #10);   //Address
+      ApdComPort1.PutString(inttostr(FLSize) + #10);   //Size
+      for I := 0 to FLSize-1 do
+      Begin
+         while not apdcomport1.CharReady do
+         Begin
+          application.ProcessMessages;
+         End;
+         bt:=ApdComPort1.GetChar;
+         fs.WriteData(bt);
+         if i mod 100=0 then
+         begin
+           lblFLCnter.Caption := inttostr(I) + '/' + inttostr(FLSize);
+           lblFLCnter.repaint;
+          // Application.ProcessMessages;
+         end;
+        // Sleep(trackbar1.position);
+      End;
+
+
+    finally
+      fs.Free;
+    end;
+   lblFLCnter.Caption := inttostr(I) + '/' + inttostr(FLSize);
+   application.ProcessMessages;
+   sleep(100);
+   BUTTON11.Tag:=0;
+   adterminal1.Active:=true;
+   adterminal1.Refresh;
+   application.ProcessMessages;
+   Sendchar('0');
+
+
+end;
+
+procedure Tfrmdis.btnFlashSendClick(Sender: TObject);
+//Flash a flash RAM
+//1st erase the sectors then send the unlock code and write bytes
+var
+  FLAddr, FLSize: Integer;
+  SectorStartAddr: array of Integer;
+  i, FirstSector, LastSector, NumSectors: Integer;
+  fs: TFilestream;
+  bt: Ansichar;
+
+const
+  SECTOR_SIZE = 4096; // 4KB
+
+begin
+  FLAddr := strtoint(lblEAddr.text);      // Starting address
+  FLSize := strtoint(lblESize.text);   // Size in bytes
+
+  // 1. Calculate the index of the first and last sector
+  FirstSector := FLAddr div SECTOR_SIZE;
+  LastSector  := (FLAddr + FLSize - 1) div SECTOR_SIZE;
+
+  // 2. Determine how many sectors are covered
+  NumSectors := (LastSector - FirstSector) + 1;
+  SetLength(SectorStartAddr, NumSectors);
+
+  // 3. Populate the array with the base address of each sector
+  for i := 0 to NumSectors - 1 do
+  begin
+    SectorStartAddr[i] := (FirstSector + i) * SECTOR_SIZE;
+  end;
+
+  // 4. Now, iterate through the array to perform your erase routine
+  for i := 0 to High(SectorStartAddr) do
+  begin
+    PerformFlashErase(SectorStartAddr[i]); // Call your Z80 communication routine
+    sleep(200);
+  end;
+   Sleep(400);
+  //here sectors are deleted so we can send the data
+
+
+    fs:= TFilestream.Create(Filelistbox2.FileName,fmOpenRead);
+    try
+      FLSize := min(FLSize, fs.Size);
+      Sendchar('B'); //Write Block
+      ApdComPort1.PutString(inttostr(FLAddr) + #10);   //Address
+      ApdComPort1.PutString(inttostr(FLSize) );   //Size
+      sleep(200);
+      for I := 0 to FLSize-1 do
+      Begin
+         fs.readData(bt);
+         Sendchar(bt);
+         Application.ProcessMessages;
+         if i mod 100=0 then
+         begin
+           lblFLCnter.Caption := inttostr(I) + '/' + inttostr(FLSize);
+           Application.ProcessMessages;
+         end;
+        // Sleep(1);
+      End;
+
+
+    finally
+      fs.Free;
+    end;
+    lblFLCnter.Caption := inttostr(I) + '/' + inttostr(FLSize);
+end;
+
+
+procedure Tfrmdis.btnFLInfoClick(Sender: TObject);
+begin
+ SendChar('D');
+ SendChar(#10);
 end;
 
 //Abort sending
@@ -1100,6 +1313,7 @@ Begin
 
   Inif:=TIniFile.create(pth+'Config.Ini');
   inif.WriteString('General','Basic Path',Filelistbox1.Directory);
+  inif.WriteString('General','Flash Path',Filelistbox2.Directory);
 
   inif.free;
 End;
@@ -1115,6 +1329,9 @@ Begin
   s:=inif.readString('General','Basic Path','');
   if s<>'' then
    Filelistbox1.Directory:=s;
+  s:=inif.readString('General','Flash Path','');
+  if s<>'' then
+   Filelistbox2.Directory:=s;
 
   inif.free;
 End;
@@ -1183,6 +1400,11 @@ begin
     o:=AnsiChar(s[i]);
     if not  SendChar(o) then break;
   End;
+end;
+
+procedure Tfrmdis.Button19Click(Sender: TObject);
+begin
+
 end;
 
 //Send a Program through RS232 to NBLaptop
@@ -1346,7 +1568,7 @@ try
     //sleep(trackbar1.Position*10);
   End;
   if checkbox2.Checked then
-   SendChar(#13);
+   SendChar(#10);
 
 end;
 
@@ -1484,6 +1706,7 @@ begin
   finally
    try
     ApdComPort1.Open:=true;
+    ApdComPort1.DTR:=True;
     setcominfolabel
    except
      on e:exception do
@@ -1562,7 +1785,7 @@ Begin
    if assigned(Compiler) and  Compiler.ISError then
     memErrors.Lines.add(msg)
    else
-   if assigned(projectlinker) then
+   if assigned(projectlinker) and assigned(ProjectLinker.asmfile) then
     if ProjectLinker.asmfile.Compiler.ISError then
      memErrors.Lines.add(msg);
  //  Tmemohack(MemMessages).SetCaretPos(Point(5,MemMessages.Lines.Count-1));
@@ -1698,6 +1921,7 @@ procedure Tfrmdis.SpeedButton6Click(Sender: TObject);
 Var sts,ses:String;
     st,se:Integer;
     sf:TFileStream;
+    shx:TStringlist;
     b,i:Integer;
     F:TextFile;
     j:Integer;
@@ -1736,6 +1960,8 @@ begin
  try
   sf:=TFileStream.Create(SaveBinFileDialog.FileName,fmCreate);
   sl:=tstringlist.create;
+  if checkbox5.Checked then
+        shx:=TStringlist.create;
  TotBytes:=0;
  FileByte:=0;
  dataline:=10000;
@@ -1769,6 +1995,8 @@ begin
             sl.Add(line);
             line:=inttostr(dataline)+' DATA ';
        End;
+       if checkbox5.Checked then //hex file
+         shx.Add(inttohex(int8(b)));
     end;
  end; //end save bytes
   makeloader(staddr,totbytes);
@@ -1783,10 +2011,24 @@ begin
   BinText.Lines.SaveToFile(ChangeFileEXt(SaveBinFileDialog.FileName,'.BLST'));
   if memErrors.Lines.Count>0 then
      memErrors.Lines.SaveToFile(ChangeFileEXt(SaveBinFileDialog.FileName,'.ERR'));
+  if checkbox5.Checked then //hex file
+  begin
+      shx.SaveToFile(ChangeFileEXt(SaveBinFileDialog.FileName,'.HEX'));
+      shx.free;
+  end;
  finally
    sl.Free;
    sf.Free;
  end;
+
+  if Compiler.Count>0 then
+  Begin
+    lblEAddr.Text := inttostr(PCmpInst(Compiler.Items[0]).Addr);
+    lblESize.Text := inttostr(TotBytes);
+    Filelistbox2.Directory:=extractFileDir(SaveBinFileDialog.FileName);
+    Filelistbox2.FileName:=SaveBinFileDialog.FileName;
+  End;
+
   Showmessage(inttostr(totbytes)+' bytes put in file!!!');
  End;
 end;

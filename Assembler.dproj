@@ -87,7 +87,6 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Debugger_DebugSourcePath>G:\_Programming\NB Emulator\Emulation\Z80Package\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
-        <DCC_UnitSearchPath>G:\_Programming\Comps_12.3\unDelphiX-main\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
