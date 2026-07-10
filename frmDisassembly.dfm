@@ -16,6 +16,7 @@ object frmdis: Tfrmdis
   ScreenSnap = True
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   TextHeight = 13
@@ -747,12 +748,9 @@ object frmdis: Tfrmdis
             Top = 0
             Width = 887
             Height = 192
-            ActivePage = TabSheet4
+            ActivePage = TabSheet2
             Align = alClient
             TabOrder = 2
-            ExplicitLeft = 83
-            ExplicitTop = 144
-            ExplicitHeight = 241
             object TabSheet2: TTabSheet
               Caption = 'ComPort'
               object cominfolabel: TLabel
@@ -830,7 +828,7 @@ object frmdis: Tfrmdis
                 Top = 76
                 Width = 68
                 Height = 21
-                ItemIndex = 4
+                ItemIndex = 5
                 TabOrder = 0
                 Text = '115200'
                 OnChange = ComboBox1Change
@@ -843,8 +841,8 @@ object frmdis: Tfrmdis
                   '128000')
               end
               object Button17: TButton
-                Left = 3
-                Top = 71
+                Left = 99
+                Top = 32
                 Width = 75
                 Height = 25
                 Caption = 'set Z80 baud'
@@ -897,6 +895,15 @@ object frmdis: Tfrmdis
                 Caption = 'Terminal Echo'
                 TabOrder = 6
                 OnClick = CheckBox4Click
+              end
+              object lbComport: TListBox
+                Left = 3
+                Top = 65
+                Width = 79
+                Height = 66
+                ItemHeight = 13
+                TabOrder = 7
+                OnClick = lbComportClick
               end
             end
             object TabSheet3: TTabSheet
@@ -1128,6 +1135,26 @@ object frmdis: Tfrmdis
                   OnClick = Button10Click
                 end
               end
+              object Button20: TButton
+                Left = 566
+                Top = 80
+                Width = 75
+                Height = 25
+                Caption = 'Button20'
+                TabOrder = 11
+                Visible = False
+                OnClick = Button20Click
+              end
+              object Button21: TButton
+                Left = 566
+                Top = 111
+                Width = 75
+                Height = 25
+                Caption = 'Button21'
+                TabOrder = 12
+                Visible = False
+                OnClick = Button21Click
+              end
             end
             object TabSheet4: TTabSheet
               Caption = 'Flash'
@@ -1139,7 +1166,6 @@ object frmdis: Tfrmdis
                 Height = 164
                 Align = alClient
                 TabOrder = 0
-                ExplicitWidth = 375
                 object lblFLCnter: TLabel
                   Left = 168
                   Top = 80
@@ -1219,9 +1245,6 @@ object frmdis: Tfrmdis
                 TabOrder = 1
                 OnClick = FileListBox2Click
                 OnDblClick = FileListBox2DblClick
-                ExplicitLeft = 592
-                ExplicitTop = 1
-                ExplicitHeight = 162
               end
             end
             object TabSheet5: TTabSheet

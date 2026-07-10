@@ -1,4 +1,4 @@
-{
+﻿{
 Grundy NewBrain Emulator Pro Made by Despsoft
 
 Copyright (c) 2004, Despoinidis Chris
@@ -38,12 +38,42 @@ uses
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, ExtDlgs, Buttons, Tabs, DockTabSet,
   OoMisc, AdPort, ADTrmEmu, Vcl.Menus, Vcl.FileCtrl, Vcl.Mask, Vcl.TabNotBk;
 
+
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.17';
+  Version='1.18';
+
+  WM_DEVICECHANGE = $0219;
+
+  DBT_DEVICEARRIVAL        = $8000;
+  DBT_DEVICEREMOVECOMPLETE = $8004;
+
+  DBT_DEVTYP_DEVICEINTERFACE = $00000005;
+
+  DEVICE_NOTIFY_WINDOW_HANDLE = $00000000;
+
+  GUID_DEVINTERFACE_COMPORT: TGUID =
+    '{86E0D1E0-8089-11D0-9CE4-08003E301F73}';
 
 type
+
+
+  PDevBroadcastHdr = ^DEV_BROADCAST_HDR;
+  DEV_BROADCAST_HDR = record
+    dbch_size: DWORD;
+    dbch_devicetype: DWORD;
+    dbch_reserved: DWORD;
+  end;
+
+  PDevBroadcastDeviceInterface = ^DEV_BROADCAST_DEVICEINTERFACE;
+  DEV_BROADCAST_DEVICEINTERFACE = record
+    dbcc_size: DWORD;
+    dbcc_devicetype: DWORD;
+    dbcc_reserved: DWORD;
+    dbcc_classguid: TGUID;
+    dbcc_name: array[0..0] of Char;
+  end;
 
   TInstr=Record
      Addr:Integer;
@@ -185,6 +215,9 @@ type
     Shape4: TShape;
     btnFLInfo: TButton;
     Button19: TButton;
+    Button20: TButton;
+    Button21: TButton;
+    lbComport: TListBox;
     procedure asmTextKeyPress(Sender: TObject; var Key: Char);
     procedure asmTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure BinTextKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -257,6 +290,10 @@ type
     procedure FileListBox2DblClick(Sender: TObject);
     procedure FileListBox2Click(Sender: TObject);
     procedure Button19Click(Sender: TObject);
+    procedure Button20Click(Sender: TObject);
+    procedure Button21Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure lbComportClick(Sender: TObject);
   private
     msgref:integer;
     cx,cy:Integer;
@@ -281,6 +318,9 @@ type
     TotalInstr:Integer;
     SelectedLine:Integer;
     SelPage: Integer;
+    FDeviceNotification: HDEVNOTIFY;
+    SelComPort:String;
+    procedure WMDeviceChange(var Msg: TMessage); message WM_DEVICECHANGE;
     procedure DoAftCompile(Sender: TObject; Fname: String);
     procedure DoBefCompile(Sender: TObject; Fname: String);
     procedure ShowCompErrors;
@@ -301,6 +341,9 @@ type
     procedure setcominfolabel;
     procedure setz80baudrate;
     procedure PerformFlashErase(Sec: integer);
+    procedure RefreshComPorts;
+    procedure SetCom(n: Integer);
+    procedure AppExceptionHandler(Sender: TObject; E: Exception);
   public
     function IsProject: Boolean;
     { Public declarations }
@@ -318,9 +361,86 @@ var
 
 implementation
 uses ustrings,uDisAsm,math,Printers,uAsm,uNBTypes, uAsmPrj, frmAbout,
-  frmChrDsgn,inifiles,dateutils,System.IOUtils;
+  frmChrDsgn,inifiles,dateutils,System.IOUtils,Registry,awuser;
 
 {$R *.dfm}
+
+function GetNumFromString(const S: string): Integer;
+var
+  C: Char;
+  Digits: string;
+begin
+  Digits := '';
+
+  for C in S do
+    if CharInSet(C, ['0'..'9']) then
+      Digits := Digits + C;
+
+  if Digits = '' then
+    Result := 0
+  else
+    Result := StrToInt(Digits);
+end;
+
+Function getComPortList:String;
+var
+  Reg: TRegistry;
+  sl:tstringlist;
+begin
+  Sl := TStringList.Create;
+
+  Reg := TRegistry.Create(KEY_READ);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKeyReadOnly('\HARDWARE\DEVICEMAP\SERIALCOMM') then
+      Reg.GetValueNames(sl);
+    // Replace value names with their data (COM1, COM2...)
+    for var I := 0 to Sl.Count - 1 do
+      Sl[I] := Reg.ReadString(Sl[I]);
+
+    sl.Sort;
+  finally
+    Reg.Free;
+    result:=sl.text;
+    sl.free;
+  end;
+end;
+
+procedure Tfrmdis.RefreshComPorts;
+var k:integer;
+  StartTick: Cardinal;
+  s:string;
+begin
+  StartTick := GetTickCount;
+  while (GetTickCount - StartTick) < 1000 do
+  begin
+    Sleep(1); // prevents CPU 100% usage
+    Application.ProcessMessages; // keeps UI responsive (VCL apps)
+    s:=getComPortList;
+    if s<>lbcomport.items.Text then   
+     lbcomport.items.Text:=s;
+  //  lbcomport.Repaint;
+  end;
+ //reconnect if possible
+ if SelComPort<>'' then
+ begin
+    k:=lbcomport.Items.IndexOf(SelComPort);
+    if k<>-1 then
+    Begin
+      if lbcomport.ItemIndex<>k then
+      begin
+        lbcomport.ItemIndex:=k;
+        SetCom(GetNumFromString(selcomport));
+      end;
+
+    End
+    else
+      apdcomport1.Open:=false;
+
+
+ end;
+
+end;
 
 Procedure   ShowDisassembler;
 Begin
@@ -468,7 +588,9 @@ end;
 
 procedure Tfrmdis.ApdComPort1PortOpen(Sender: TObject);
 begin
- checkModemStatus
+ checkModemStatus;
+ adTerminal1.Active:=false;
+ adTerminal1.Active:=true;
 
 end;
 
@@ -483,7 +605,7 @@ begin
    k:=ord(c);
    listbox1.Items.Add(inttostr(k))
   except
-
+    ApdComPort1.FlushInBuffer;
   end;
 end;
 
@@ -598,10 +720,64 @@ begin
   ApdComPort1.Open:=false;
 end;
 
+procedure Tfrmdis.AppExceptionHandler(Sender: TObject; E: Exception);
+begin
+  // suppress COM port errors silently
+  if Pos('device', LowerCase(E.Message)) > 0 then
+  begin
+
+    Exit; // IMPORTANT: prevents default dialog
+  end;
+
+  // optional: handle other COM-related messages
+  if Pos('read error', LowerCase(E.Message)) > 0 then
+  begin
+
+    Exit;
+  end;
+
+  // default behavior for everything else
+  Application.ShowException(E);
+end;
+
+procedure MyShowExceptionHandler(ExceptObject: TObject; ExceptAddr: Pointer);
+var
+  E: Exception;
+  Msg: string;
+begin
+  if ExceptObject is Exception then
+  begin
+    E := Exception(ExceptObject);
+    Msg := LowerCase(E.Message);
+
+    // 🚫 suppress COM port / device errors
+    if (Pos('device', Msg) > 0) or
+       (Pos('read', Msg) > 0) or
+       (Pos('1167', Msg) > 0) then
+    begin
+      Exit; // IMPORTANT: swallow exception
+    end;
+  end;
+
+end;
+
 procedure Tfrmdis.FormCreate(Sender: TObject);
 Var i:integer;
+  Filter: DEV_BROADCAST_DEVICEINTERFACE;
 begin
- AdTerminal1.ScrollbackRows:=2000;
+  GShowExceptionHandler := MyShowExceptionHandler;
+  Application.OnException := AppExceptionHandler;
+  ZeroMemory(@Filter, SizeOf(Filter));
+  Filter.dbcc_size := SizeOf(Filter);
+  Filter.dbcc_devicetype := DBT_DEVTYP_DEVICEINTERFACE;
+  Filter.dbcc_classguid := GUID_DEVINTERFACE_COMPORT;
+
+  FDeviceNotification := RegisterDeviceNotification(
+    Handle,
+    @Filter,
+    DEVICE_NOTIFY_WINDOW_HANDLE);
+
+  AdTerminal1.ScrollbackRows:=2000;
   label9.Font.Color:=clBlue;
   PageNo:=-1;
   nLen := 0;
@@ -618,8 +794,30 @@ begin
    except
       //may be same port opened by the emulator
    end;
-  
 
+end;
+
+procedure Tfrmdis.FormDestroy(Sender: TObject);
+begin
+ if FDeviceNotification <> nil then
+    UnregisterDeviceNotification(FDeviceNotification);
+end;
+
+procedure Tfrmdis.WMDeviceChange(var Msg: TMessage);
+begin
+  case Msg.WParam of
+    DBT_DEVICEARRIVAL:
+      begin
+        OutputDebugString('COM port connected');
+        RefreshComPorts;
+      end;
+
+    DBT_DEVICEREMOVECOMPLETE:
+      begin
+        OutputDebugString('COM port disconnected');
+        RefreshComPorts;
+      end;
+  end;
 end;
 
 procedure Tfrmdis.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -632,11 +830,14 @@ end;
 procedure Tfrmdis.FormShow(Sender: TObject);
 begin
    caption:=caption+' - Ver. '+version;
- edit1.Text:='32768';
+   edit1.Text:='32768';
    edit2.Text:='255';
    edit6.Text:='0';
    edit7.Text:='255';
    loadpath;
+ RefreshComPorts;
+
+
 end;
 
 Function Tfrmdis.GetDefaultName:String;
@@ -1174,8 +1375,10 @@ VAR HL,BC:INTEGER;
     q:ansichar;
     f:Tfilestream;
     pth:string;
+    SLP:integer;
 begin
-
+  ApdComPort1.FlushInBuffer;
+  slp:=max(5,trackbar1.Position);
   pth:=extractfilepath(application.ExeName);
   adterminal1.Active:=false;
   BUTTON11.Tag:=1;
@@ -1189,15 +1392,15 @@ begin
   if BC>0 then
   Begin
    SendChar('J');
-   Sleep(5);
+   Sleep(slp);
    SendChar(ANSICHAR(L));
-   Sleep(5);
+   Sleep(slp);
    SendChar(ANSICHAR(H));
-   Sleep(5);
+   Sleep(slp);
    SendChar(ANSICHAR(C));
-   Sleep(5);
+   Sleep(slp);
    SendChar(ANSICHAR(B));
-   Sleep(5);
+   Sleep(slp);
    f:=Tfilestream.Create(pth+'NewM_'+edit6.text+'.dmp',fmCreate);
     for i := 0 to BC-1 do
     Begin
@@ -1489,13 +1692,13 @@ begin
    SendChar('U');
    Sleep(500);
    SendChar(ANSICHAR(L));
-   Sleep(5);
+   Sleep(50);
    SendChar(ANSICHAR(H));
-   Sleep(5);
+   Sleep(50);
    SendChar(ANSICHAR(C));
-   Sleep(5);
+   Sleep(50);
    SendChar(ANSICHAR(B));
-   Sleep(5);
+   Sleep(50);
     for i := 0 to siz do
     Begin
        sf.Read(o,1);
@@ -1518,6 +1721,88 @@ begin
 end;
 
 //Execute the program previously sent to NB Laptop
+procedure Tfrmdis.Button20Click(Sender: TObject);
+VAR HL,BC:INTEGER;
+    H,L,B,C:Byte;
+  i: Integer;
+begin
+
+
+  HL:=strtoint(edit1.Text);
+
+  BC:=100;
+  H:=HL DIV 256;
+  L:=HL mod 256;
+  B:=BC DIV 256;
+  C:=BC mod 256;
+  progressbar1.Min:=0;
+  progressbar1.Max:=BC;
+  progressbar1.Position:=0;
+  if BC>0 then
+  Begin
+   SendChar('U');
+   Sleep(500);
+   SendChar(ANSICHAR(L));
+   Sleep(50);
+   SendChar(ANSICHAR(H));
+   Sleep(50);
+   SendChar(ANSICHAR(C));
+   Sleep(50);
+   SendChar(ANSICHAR(B));
+   Sleep(50);
+   for i := 1 to bc div 2 do
+   begin
+      SendChar(ANSICHAR(i));
+   end;
+   for i := bc div 2 +1 to bc do
+   begin
+      SendChar(ANSICHAR(i));
+   end;
+
+  End;
+  Sleep(500);
+  SendChar(' ');
+end;
+
+procedure Tfrmdis.Button21Click(Sender: TObject);
+VAR HL,BC:INTEGER;
+    H,L,B,C:Byte;
+  i: Integer;
+begin
+
+
+  HL:=strtoint(edit1.Text);
+
+  BC:=512;
+  H:=HL DIV 256;
+  L:=HL mod 256;
+  B:=BC DIV 256;
+  C:=BC mod 256;
+  progressbar1.Min:=0;
+  progressbar1.Max:=BC;
+  progressbar1.Position:=0;
+  if BC>0 then
+  Begin
+   SendChar('U');
+   Sleep(500);
+   SendChar(ANSICHAR(L));
+   Sleep(50);
+   SendChar(ANSICHAR(H));
+   Sleep(50);
+   SendChar(ANSICHAR(C));
+   Sleep(50);
+   SendChar(ANSICHAR(B));
+   Sleep(50);
+   for i := 1 to bc do
+   begin
+      SendChar(ANSICHAR(0));
+   end;
+
+  End;
+  Sleep(500);
+  SendChar(' ');
+end;
+
 procedure Tfrmdis.Button2Click(Sender: TObject);
 begin
  ApdComPort1.PutChar('X');
@@ -1697,12 +1982,11 @@ Begin
   cominfolabel.Caption:='COM Port '+inttostr(ApdComPort1.ComNumber)+' at '+s1+',N,8,1 '+s2;
 End;
 
-procedure Tfrmdis.Button7Click(Sender: TObject);
-begin
+procedure Tfrmdis.SetCom(n:Integer);
+Begin
   try
   ApdComPort1.Open:=false;
-  ApdComPort1.ComNumber:=0;
-  ApdComPort1.PromptForPort:=true;
+  ApdComPort1.ComNumber:=n;
   finally
    try
     ApdComPort1.Open:=true;
@@ -1713,6 +1997,17 @@ begin
       showmessage(e.Message);
    end;
   end;
+  adterminal1.ComPort:=nil;
+  adterminal1.ComPort:=ApdComPort1;
+
+End;
+
+procedure Tfrmdis.Button7Click(Sender: TObject);
+begin
+  ApdComPort1.Open:=false;
+  ApdComPort1.ComNumber:=0;
+  ApdComPort1.PromptForPort:=true;
+  SetCom(ApdComPort1.ComNumber);
 end;
 
 //Set hardware Flow control
@@ -1814,6 +2109,17 @@ end;
 function Tfrmdis.IsProject: Boolean;
 begin
   Result := projtext.Lines.Count>1;
+end;
+
+procedure Tfrmdis.lbComportClick(Sender: TObject);
+begin
+ try
+  SelComPort:=TListbox(sender).Items[TListbox(sender).ItemIndex];
+ except
+
+ end;
+ SetCom(GetNumFromString(selcomport));
+
 end;
 
 procedure Tfrmdis.lblComboChange(Sender: TObject);
