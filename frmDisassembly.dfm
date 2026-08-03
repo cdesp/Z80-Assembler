@@ -748,7 +748,7 @@ object frmdis: Tfrmdis
             Top = 0
             Width = 887
             Height = 192
-            ActivePage = TabSheet2
+            ActivePage = TabSheet4
             Align = alClient
             TabOrder = 2
             object TabSheet2: TTabSheet
@@ -1173,6 +1173,15 @@ object frmdis: Tfrmdis
                   Height = 13
                   Caption = '00000'
                 end
+                object Label5: TLabel
+                  Left = 23
+                  Top = 128
+                  Width = 319
+                  Height = 13
+                  Caption = 
+                    'Up to 65535 bytes for the rest of the memory use the z80 to writ' +
+                    'e'
+                end
                 object lblEAddr: TLabeledEdit
                   Left = 8
                   Top = 16
@@ -1196,11 +1205,11 @@ object frmdis: Tfrmdis
                   Text = '10'
                 end
                 object btnFlashSend: TButton
-                  Left = 160
-                  Top = 16
-                  Width = 75
+                  Left = 23
+                  Top = 83
+                  Width = 89
                   Height = 25
-                  Caption = 'Flash Memory'
+                  Caption = 'Flash Bootloader'
                   TabOrder = 2
                   OnClick = btnFlashSendClick
                 end
@@ -1215,23 +1224,13 @@ object frmdis: Tfrmdis
                   OnClick = btnFlashReadClick
                 end
                 object btnFLInfo: TButton
-                  Left = 256
-                  Top = 47
+                  Left = 160
+                  Top = 16
                   Width = 75
                   Height = 25
                   Caption = 'Read Flash ID'
                   TabOrder = 4
                   OnClick = btnFLInfoClick
-                end
-                object Button19: TButton
-                  Left = 352
-                  Top = 48
-                  Width = 75
-                  Height = 25
-                  Hint = 'T'
-                  Caption = 'Button19'
-                  TabOrder = 5
-                  OnClick = btnFlashReadClick
                 end
               end
               object FileListBox2: TFileListBox

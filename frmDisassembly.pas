@@ -42,7 +42,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.18';
+  Version='1.19';
 
   WM_DEVICECHANGE = $0219;
 
@@ -214,10 +214,10 @@ type
     Shape3: TShape;
     Shape4: TShape;
     btnFLInfo: TButton;
-    Button19: TButton;
     Button20: TButton;
     Button21: TButton;
     lbComport: TListBox;
+    Label5: TLabel;
     procedure asmTextKeyPress(Sender: TObject; var Key: Char);
     procedure asmTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure BinTextKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1139,8 +1139,8 @@ end;
 
 procedure Tfrmdis.PerformFlashErase(Sec:integer);
 Begin
-  SendChar('E');
-  ApdComPort1.PutString(IntToStr(sec) + #10);
+  //SendChar('E');
+  ApdComPort1.PutString('E'+IntToStr(sec) + #10);
 End;
 
 procedure Tfrmdis.btnFlashReadClick(Sender: TObject);
