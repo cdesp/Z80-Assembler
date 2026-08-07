@@ -42,7 +42,7 @@ uses
 Const
   cLnSpace=0;
   unitname='ASSEMBLER';
-  Version='1.19';
+  Version='1.20';
 
   WM_DEVICECHANGE = $0219;
 
@@ -218,6 +218,9 @@ type
     Button21: TButton;
     lbComport: TListBox;
     Label5: TLabel;
+    leFlash: TLabeledEdit;
+    btnFlash: TButton;
+    btnFlsRD: TButton;
     procedure asmTextKeyPress(Sender: TObject; var Key: Char);
     procedure asmTextMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure BinTextKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -289,11 +292,12 @@ type
     procedure btnFlashReadClick(Sender: TObject);
     procedure FileListBox2DblClick(Sender: TObject);
     procedure FileListBox2Click(Sender: TObject);
-    procedure Button19Click(Sender: TObject);
+    procedure btnFlsRDClick(Sender: TObject);
     procedure Button20Click(Sender: TObject);
     procedure Button21Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure lbComportClick(Sender: TObject);
+    procedure btnFlashClick(Sender: TObject);
   private
     msgref:integer;
     cx,cy:Integer;
@@ -1143,6 +1147,43 @@ Begin
   ApdComPort1.PutString('E'+IntToStr(sec) + #10);
 End;
 
+procedure Tfrmdis.btnFlashClick(Sender: TObject);
+var
+     o:AnsiChar;
+     oldad:string;
+begin
+    if not Assigned(Compiler) then Exit;
+
+   //Put Compiled Object in a File
+    if Compiler.ERRORSFOUND then
+    Begin
+      ShowMessage('Errors were found!!');
+      Exit;
+    end;
+
+    if Compiler.Count=0 then
+    Begin
+      ShowMessage('Nothing to send!!');
+      Exit;
+    end;
+    o:=AnsiChar(strtoint(leFlash.Text));
+    if (byte(o)>=$80) and (byte(o)<=$bf) then
+    begin
+        oldad:=edit1.text;
+        edit1.text:='$8000'; //put at bank4
+        application.ProcessMessages;
+        button1Click(nil);
+
+       if MessageDlg('Flash RAM page '+inttohex(byte(o),2)+'h ?',mtInformation,[mbOk,mbCancel],0)=mrOK  then
+       begin
+         SendChar('F');
+         SendChar(o);
+       end;
+    end
+      else showmessage('Valid Pages: $80 - $BF');
+    edit1.Text:=oldad;
+end;
+
 procedure Tfrmdis.btnFlashReadClick(Sender: TObject);
 var
   FLAddr, FLSize: Integer;
@@ -1605,9 +1646,15 @@ begin
   End;
 end;
 
-procedure Tfrmdis.Button19Click(Sender: TObject);
+procedure Tfrmdis.btnFlsRDClick(Sender: TObject);
+var o:ansichar;
 begin
+   o:=AnsiChar(strtoint(leFlash.Text));
+   if (byte(o)>=$80) and (byte(o)<=$bf) then
+   begin
+      //todo:
 
+   end;
 end;
 
 //Send a Program through RS232 to NBLaptop

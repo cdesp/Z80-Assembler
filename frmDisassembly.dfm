@@ -748,7 +748,7 @@ object frmdis: Tfrmdis
             Top = 0
             Width = 887
             Height = 192
-            ActivePage = TabSheet4
+            ActivePage = TabSheet3
             Align = alClient
             TabOrder = 2
             object TabSheet2: TTabSheet
@@ -1155,9 +1155,39 @@ object frmdis: Tfrmdis
                 Visible = False
                 OnClick = Button21Click
               end
+              object leFlash: TLabeledEdit
+                Left = 357
+                Top = 22
+                Width = 93
+                Height = 21
+                EditLabel.Width = 103
+                EditLabel.Height = 13
+                EditLabel.Caption = 'Flash Page ($80-$BF)'
+                TabOrder = 13
+                Text = ''
+              end
+              object btnFlash: TButton
+                Left = 456
+                Top = 20
+                Width = 75
+                Height = 25
+                Caption = 'Flash Page '
+                TabOrder = 14
+                OnClick = btnFlashClick
+              end
+              object btnFlsRD: TButton
+                Left = 537
+                Top = 20
+                Width = 75
+                Height = 25
+                Caption = 'Read Page'
+                TabOrder = 15
+                Visible = False
+                OnClick = btnFlsRDClick
+              end
             end
             object TabSheet4: TTabSheet
-              Caption = 'Flash'
+              Caption = 'Flash Programmer'
               ImageIndex = 2
               object Panel1: TPanel
                 Left = 0
